@@ -41,7 +41,7 @@ class Indicator extends PanelMenu.Button {
 
     _init() {
 
-        super._init(0.0, _('One Drive'));
+        super._init(0.0, _('OneDrive'));
 
         this.statusIcon = new St.Icon({
 
@@ -49,21 +49,19 @@ class Indicator extends PanelMenu.Button {
 
             style_class: 'disabledIcon',
 
-        }); 
+        });
 
         let box = new St.BoxLayout({ style_class: 'panel-status-menu-box' });
 
         box.add_child(this.statusIcon);
 
-        box.add_child(PopupMenu.arrowIcon(St.Side.BOTTOM));
-
         this.add_child(box);
 
-        let menuItemOnOff = new PopupMenu.PopupSwitchMenuItem("Onedrive", this.isOneDriveActive());
+        let menuItemOnOff = new PopupMenu.PopupSwitchMenuItem("OneDrive", this.isOneDriveActive());
 
         this.menu.addMenuItem(menuItemOnOff);
 
-        menuItemOnOff.statusAreaKey = "Onedrive";
+        menuItemOnOff.statusAreaKey = "OneDrive";
 
         menuItemOnOff.connect('toggled', this.onOff.bind(this));
 
@@ -72,7 +70,7 @@ class Indicator extends PanelMenu.Button {
         let itemLogin = new PopupMenu.PopupMenuItem(_('Login...'));
 
         itemLogin.connect('activate', () => {
-        
+
             if(this.menuItemOnOff._switch.state)
             {
                 this.menuItemOnOff.setToggleState(false);
@@ -123,7 +121,7 @@ class Indicator extends PanelMenu.Button {
         });
 
         this.menu.addMenuItem(itemStatus);
-        
+
         let itemProcess = new PopupMenu.PopupMenuItem(_('Show service process'));
 
         let procapp = Gio.AppInfo.create_from_commandline(
@@ -132,7 +130,7 @@ class Indicator extends PanelMenu.Button {
 
             null,
 
-            Gio.AppInfoCreateFlags.SUPPORTS_STARTUP_NOTIFICATION 
+            Gio.AppInfoCreateFlags.SUPPORTS_STARTUP_NOTIFICATION
 
             |Gio.AppInfoCreateFlags.NEEDS_TERMINAL);
 
@@ -144,7 +142,7 @@ class Indicator extends PanelMenu.Button {
 
         this.menu.addMenuItem(itemProcess);
 
-        let itemWeb = new PopupMenu.PopupMenuItem(_('Open One Drive web site'));
+        let itemWeb = new PopupMenu.PopupMenuItem(_('Open OneDrive web site'));
 
         itemWeb.connect('activate', () => {
 
@@ -153,21 +151,21 @@ class Indicator extends PanelMenu.Button {
         });
 
         this.menu.addMenuItem(itemWeb);
-        
-        let itemFolder = new PopupMenu.PopupMenuItem(_('Open One Drive local folder'));
+
+        let itemFolder = new PopupMenu.PopupMenuItem(_('Open OneDrive local folder'));
 
         itemFolder.connect('activate', () => {
 
             this.setOneDriveFolder();
 
-            if(this._folder === "") Main.notify("One drive 'sync-dir' not found");
+            if(this._folder === "") Main.notify("OneDrive 'sync-dir' not found");
 
             else Gio.AppInfo.launch_default_for_uri("file://" + this._folder, null);
 
         });
 
         this.menu.addMenuItem(itemFolder);
-         
+
         // requirement check
         let problem = false;
 
@@ -179,7 +177,7 @@ class Indicator extends PanelMenu.Button {
 
         if(!problem && !this.controllaBinario("touch")) problem = true;
 
-        if(problem) return; 
+        if(problem) return;
 
         // start loop
         this.setOneDriveFolder();
@@ -188,13 +186,13 @@ class Indicator extends PanelMenu.Button {
 
         this._aggiornaLoop = GLib.timeout_add(4,3000, this.aggiorna.bind(this));
 
-    } 
+    }
 
     setOneDriveFolder()
 
     {
         let [resOnedrive, oneDriveConfig] = GLib.spawn_command_line_sync('onedrive --display-config');
-            
+
         let folder = "";
 
         let config = oneDriveConfig.toString().split("\n");
@@ -208,7 +206,7 @@ class Indicator extends PanelMenu.Button {
                 break;
 
             }
-            
+
         }
 
         this._folder = folder;
@@ -235,7 +233,7 @@ class Indicator extends PanelMenu.Button {
 
             this.getLastLineStatus();
 
-            if(oldlastLineStatus !== this.lastLineStatus 
+            if(oldlastLineStatus !== this.lastLineStatus
 
                 || (this.lastLineStatus.indexOf("Downloading") >= 0 && this.lastLineStatus.indexOf("done.") === -1)
 
@@ -246,11 +244,11 @@ class Indicator extends PanelMenu.Button {
 
                 this.statusIcon.set_property("icon_name", "system-search-symbolic");
 
-                this.statusIcon.set_property("icon_name", ""); 
+                this.statusIcon.set_property("icon_name", "");
 
                 this.setEmblem("synchronizing");
 
-            } 
+            }
 
             else
             {
@@ -259,7 +257,7 @@ class Indicator extends PanelMenu.Button {
                 this.statusIcon.set_property("icon_name", "system-search-symbolic");
 
                 this.statusIcon.set_property("icon_name", "");
-                
+
                 this.menuItemOnOff.setToggleState(true);
 
                 this.itemLogin.label.text = _('Logout...');
@@ -284,7 +282,7 @@ class Indicator extends PanelMenu.Button {
             this.setEmblem();
 
         }
-        
+
         return true;
     }
 
@@ -317,14 +315,14 @@ class Indicator extends PanelMenu.Button {
 
         });
 
-    } 
+    }
 
     isOneDriveActive() {
 
         let [resOnedrive, outOnedrive] = GLib.spawn_command_line_sync("systemctl --user is-active onedrive");
 
         let outOnedriveString = outOnedrive.toString().replace(/(\r\n|\n|\r)/gm,"");
-        
+
         return outOnedriveString == "active";
 
     }
@@ -334,14 +332,14 @@ class Indicator extends PanelMenu.Button {
         let [resOnedrive, outOnedrive] = GLib.spawn_command_line_sync("systemctl --user status onedrive");
 
         let status = outOnedrive.toString().split("\n");
-        
+
         this.lastLineStatus = status[status.length -2];
-    } 
+    }
 
     onOff() {
 
         let result = this.isOneDriveActive();
-        
+
         if(result) {
 
             let [resOnedrive, outOnedrive] = GLib.spawn_command_line_sync("systemctl --user stop onedrive");
@@ -353,7 +351,7 @@ class Indicator extends PanelMenu.Button {
             let [resOnedrive, outOnedrive] = GLib.spawn_command_line_sync("systemctl --user start onedrive");
 
         }
-        
+
         this.aggiorna();
 
     }
@@ -387,5 +385,5 @@ export default class OnedriveExtension extends Extension {
         this._indicator = null;
 
     }
-    
+
 }

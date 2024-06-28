@@ -1,8 +1,8 @@
 {
-  "name": "Onedrive Client",
-  "description": "Show and Control Onedrive Client",
+  "name": "OneDrive Client",
+  "description": "Show and Control OneDrive Client",
   "uuid": "onedrive@client.onedrive.com",
-  "version":7,
+  "version":8,
   "shell-version": [
     "46"
   ],
